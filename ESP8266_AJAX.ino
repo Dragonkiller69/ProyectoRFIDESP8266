@@ -9,14 +9,52 @@
  
 #include "index.html.h" //Our HTML webpage contents with javascripts
  
-#define LED D6  //On board LED
+#define LED D4  //On board LED
  
 //SSID and Password of your WiFi router
-const char* ssid = "TURBONETT_754BB8";
-const char* password = "12345678";
+const char *ssid = "chapaNFC";
+const char *password = "12345678";
  
 ESP8266WebServer server(8000); //Server on port 8000
  
+
+//==============================================================
+//                  SETUP
+//==============================================================
+
+void setup() {
+  Serial.begin(115200);
+  delay(10);
+  
+  WiFi.mode(WIFI_AP);
+  while(!WiFi.softAP(ssid, password)){
+   Serial.println(".");
+    delay(100);
+  }
+  
+  Serial.print("Iniciado AP ");
+  Serial.println(ssid);
+  Serial.print("IP address:\t");
+  Serial.println(WiFi.softAPIP());
+ 
+  //Onboard LED port Direction output
+  pinMode(LED,OUTPUT);
+
+  server.on("/micro2019", handleRoot);      //Which routine to handle at root location. This is display page
+  server.on("/setLED", handleLED);
+  server.on("/leerADC", handleADC);
+ 
+  server.begin();                  //Start server
+  Serial.println("HTTP server started");
+  
+}
+//==============================================================
+//                     LOOP
+//==============================================================
+void loop(void){
+  server.handleClient();          //Escucha las peticiones del cliente
+}
+
 //===============================================================
 // This routine is executed when you open its IP in browser
 //===============================================================
@@ -49,43 +87,4 @@ void handleLED() {
  }
  
  server.send(200, "text/plane", ledState); //Envias estado a la pagina
-}
-//==============================================================
-//                  SETUP
-//==============================================================
-void setup(void){
-  Serial.begin(115200);
-  
-  WiFi.begin(ssid, password);     //Connect to your WiFi router
-  Serial.println("");
- 
-  //Onboard LED port Direction output
-  pinMode(LED,OUTPUT);
-  
-  // Wait for connection
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
- 
-  //If connection successful show IP address in serial monitor
-  Serial.println("");
-  Serial.print("Connected to ");
-  Serial.println(ssid);
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());  //IP address assigned to your ESP
- 
-  server.on("/micro2019", handleRoot);      //Which routine to handle at root location. This is display page
-  server.on("/setLED", handleLED);
-  server.on("/leerADC", handleADC);
- 
-  server.begin();                  //Start server
-  Serial.println("HTTP server started");
-  
-}
-//==============================================================
-//                     LOOP
-//==============================================================
-void loop(void){
-  server.handleClient();          //Escucha las peticiones del cliente
 }
