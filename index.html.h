@@ -9,20 +9,48 @@ const String MAIN_page = R"=(
 </head>
 
 <body>
-    <div id="mySidenav" class="sidenav">
-        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-        <a href="#">Administrar</a>
-        <a href="#">Listar</a>
-        <a href="#">Clients</a>
-        <a href="#">Contact</a>
-    </div>
-    <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; Menu</span>
-    <h1>Administracion RFID</h1>
-    <div id="agregar">
-        <h2>Agregar nueva llave</h1>
-            <button type="button" onclick="agregar()">Agregar</button>
-            <br>
-            <h2 id="estado"></h2>
+    <div class="container">
+        <header>
+            <p>Administracion RFID NFC </p>
+        </header>
+
+        <nav>
+            <div id="navbar" class="tab">
+                <p id="titulo">Administracion RFID NFC </p>
+                <button class="tablinks" onclick="cambiarTab(event, 'agregar')" id="defaultOpen">Agregar</button>
+                <button class="tablinks" onclick="cambiarTab(event, 'Paris')">Borrar</button>
+                <button class="tablinks" onclick="cambiarTab(event, 'Tokyo')">Listar</button>
+                <div class="menu" onclick="myFunction()">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+            <!-- Navigation -->
+        </nav>
+
+        <main>
+            <div id="agregar" class="tabcontent">
+                <h2>Agregar nueva llave</h1>
+                    <button type="button" onclick="agregar()">Agregar</button>
+                    <br>
+                    <h2 id="estado"></h2>
+            </div>
+
+            <div id="Paris" class="tabcontent">
+                <h3>Paris</h3>
+                <p>Paris is the capital of France.</p>
+            </div>
+
+            <div id="Tokyo" class="tabcontent">
+                <h3>Tokyo</h3>
+                <p>Tokyo is the capital of Japan.</p>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; Universidad de El Salvador Micro Programacion Copyright 2019.</p>
+        </footer>
     </div>
 
     <script>
@@ -38,82 +66,181 @@ const String MAIN_page = R"=(
             xhttp.send();
         }
 
-        function openNav() {
-            document.getElementById("mySidenav").style.width = "100%";
-            document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
-        }
+        function cambiarTab(evt, cityName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
 
-        function closeNav() {
-            document.getElementById("mySidenav").style.width = "0";
-            document.body.style.backgroundColor = "white";
+            for (const tab of tabcontent) {
+                tab.style.display = "none";
+
+            }
+
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(cityName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+        document.getElementById("defaultOpen").click();
+
+        function myFunction() {
+            var x = document.getElementById("navbar");
+            if (x.className === "tab") {
+                x.className += " responsive";
+            } else {
+                x.className = "tab";
+            }
         }
     </script>
 
     <style>
-        h1 {
-            text-align: center;
+        .menu div {
+            width: 30px;
+            height: 4px;
+            background-color: black;
+            margin: 6px 0;
         }
         
-        #agregar {
-            text-align: center;
-            border: black 1px solid;
-            width: 20%;
+        .menu {
+            display: none;
+            margin: 4%;
+        }
+        
+        #titulo {
+            display: none;
         }
         
         body {
-            font-family: "Lato", sans-serif;
-            transition: background-color .5s;
+            margin: 0%;
+            font-family: Arial, Helvetica, sans-serif;
         }
         
-        .sidenav {
-            height: 100%;
-            max-width: 275px;
-            width: 0;
-            position: fixed;
-            z-index: 1;
-            top: 0;
-            left: 0;
-            background-color: #111;
-            overflow-x: hidden;
-            transition: 0.7s;
-            padding-top: 60px;
+        .container {
+            display: grid;
+            grid-template-areas: "header header header" "nav content content" "nav footer footer";
+            grid-template-columns: 2fr 10fr 1fr;
+            grid-template-rows: 1fr 10fr 1fr;
+            width: 100%;
+            height: 100vh;
+        }
+        
+        header {
+            grid-area: header;
+            background-color: #000000;
+            color: rgb(248, 246, 239);
+            font-size: 125%;
             text-align: center;
         }
         
-        .sidenav a {
-            padding: 8px 8px 8px 32px;
-            text-decoration: none;
-            font-size: 25px;
-            color: #818181;
+        nav {
+            grid-area: nav;
+            background-color: #2b2a2a;
+        }
+        
+        main {
+            grid-area: content;
+            background-color: #e1e2e1;
+        }
+        
+        footer {
+            grid-area: footer;
+            color: rgb(248, 246, 239);
+            background-color: #1c1b1b;
+            text-align: center;
+        }
+        
+        .tabcontent {
+            -webkit-animation: fadeEffect 1s;
+            animation: fadeEffect 1s;
+        }
+        
+        .tab button {
             display: block;
+            background-color: inherit;
+            color: rgb(248, 246, 239);
+            padding: 22px 16px;
+            width: 100%;
+            border: none;
+            outline: none;
+            text-align: left;
+            cursor: pointer;
             transition: 0.3s;
+            font-size: 125%;
+        }
+        /* Change background color of buttons on hover */
+        
+        .tab button:hover {
+            background-color: #ddd;
+            color: black;
+        }
+        /* Create an active/current "tab button" class */
+        
+        .tab button.active {
+            background-color: #ccc;
+            color: black;
         }
         
-        .sidenav a:hover {
-            color: #f1f1f1;
-        }
-        
-        .sidenav .closebtn {
-            position: absolute;
-            top: 0;
-            right: 25px;
-            font-size: 36px;
-            margin-left: 50px;
-        }
-        
-        @media screen and (max-height: 450px) {
-            .sidenav {
-                padding-top: 15px;
+        @media only screen and (max-width: 400px) {
+            .container {
+                display: grid;
+                grid-template-areas: " nav " " content " " footer ";
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 10fr 1fr;
+                width: 100%;
+                height: 100vh;
             }
-            .sidenav a {
-                font-size: 18px;
+            header {
+                display: none;
             }
         }
         
-        @media only screen and (max-width: 375px) {
-            .sidenav {
-                max-width: 100%;
-                transition: 0.5s;
+        @media only screen and (max-width: 400px) {
+            .tab button:not(:first-child) {
+                display: none;
+            }
+            .tab .menu {
+                float: right;
+                display: block;
+                position: absolute;
+                right: 0;
+                top: 0;
+            }
+            .tab.responsive {
+                position: relative;
+            }
+            .tab.responsive button {
+                float: none;
+                display: block;
+                text-align: left;
+            }
+            #titulo {
+                color: rgb(248, 246, 239);
+                text-align: center;
+                font-size: 120%;
+                float: none;
+                display: block;
+                width: 75%;
+                margin: 0%;
+                padding: 5%;
+            }
+        }
+        
+        @-webkit-keyframes fadeEffect {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeEffect {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
             }
         }
     </style>
