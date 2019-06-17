@@ -19,7 +19,7 @@
                 <button class="tablinks" onclick="cambiarTab(event, 'agregar')" id="defaultOpen">Agregar</button>
                 <button class="tablinks" onclick="cambiarTab(event, 'Paris')">Borrar</button>
                 <button class="tablinks" onclick="cambiarTab(event, 'Tokyo')">Listar</button>
-                <div class="menu" onclick="myFunction()">
+                <div class="menu" ontouchend="myFunction()">
                     <div></div>
                     <div></div>
                     <div></div>
@@ -31,14 +31,14 @@
             <div id="agregar" class="tabcontent">
                 <h2 style="margin-top: 0%">Agregar nueva llave</h2>
                 <label>Acerque la llave a la cerradura</label>
-                <br>
+                <br><br>
                 <label>UID de nueva llave: </label>
                 <br>
-                <input type="text" readonly placeholder="UID aparecera al ser leida la llave">
-                <br>
-                <button type="button" onclick="agregar()" class="bu">Agregar</button>
+                <input id="uid" type="text" readonly placeholder="No se detecta llave cerca">
+                <br><br>
+                <button type="button" onclick="agregar()" class="button">Agregar</button>
                 <br><br><br>
-                <label id="estado">La llave fue agregada exitosamente.</laebl>
+                <label id="estado"></laebl>
             </div>
 
             <div id="Paris" class="tabcontent">
@@ -58,6 +58,7 @@
     </div>
 
     <script>
+        setInterval(() => getUID(), 1000);
         function agregar() {
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
@@ -67,6 +68,18 @@
                 }
             };
             xhttp.open("GET", "agregar", true);
+            xhttp.send();
+        }
+
+        function getUID() {
+            console.log("hola");
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("uid").value = this.responseText;
+                }
+            };
+            xhttp.open("GET", "getUID", true);
             xhttp.send();
         }
 
@@ -177,8 +190,24 @@
             border: 2px solid #29434e;
             border-radius: 4px;
             font-size: 100%;
-            }
-        
+            text-align: center;
+        }
+
+        .button {
+            background-color: #819ca9; 
+            color: black; 
+            border: 2px solid #29434e;
+            padding: 2% 5%;
+            text-align: center;
+             text-decoration: none;
+            display: inline-block;
+             font-size: 100%;
+             margin: 0.5% ;
+             transition-duration: 0.4s;
+             cursor: pointer;
+             user-select: none;
+        }
+
         .tab button {
             display: block;
             background-color: inherit;
@@ -250,7 +279,26 @@
                 padding: 5%;
             }
         }
+
+        @media only screen and (max-width: 400px){
+            .tabcontent input[type=text] {
+                width: 80%;
+             }
+             .button:active {
+                 background-color: #29434e;
+                 color: white;
+                 box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+             }
+        }
         
+        @media only screen and (min-width: 401px){
+            .button:hover {
+             background-color: #29434e;
+             color: white;
+             box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+            }
+        }
+
         @-webkit-keyframes fadeEffect {
             from {
                 opacity: 0;

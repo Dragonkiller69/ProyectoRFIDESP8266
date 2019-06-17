@@ -20,21 +20,26 @@ const String MAIN_page = R"=(
                 <button class="tablinks" onclick="cambiarTab(event, 'agregar')" id="defaultOpen">Agregar</button>
                 <button class="tablinks" onclick="cambiarTab(event, 'Paris')">Borrar</button>
                 <button class="tablinks" onclick="cambiarTab(event, 'Tokyo')">Listar</button>
-                <div class="menu" onclick="myFunction()">
+                <div class="menu" ontouchend="myFunction()">
                     <div></div>
                     <div></div>
                     <div></div>
                 </div>
             </div>
-            <!-- Navigation -->
         </nav>
 
         <main>
             <div id="agregar" class="tabcontent">
-                <h2>Agregar nueva llave</h1>
-                    <button type="button" onclick="agregar()">Agregar</button>
-                    <br>
-                    <h2 id="estado"></h2>
+                <h2 style="margin-top: 0%">Agregar nueva llave</h2>
+                <label>Acerque la llave a la cerradura</label>
+                <br><br>
+                <label>UID de nueva llave: </label>
+                <br>
+                <input id="uid" type="text" readonly placeholder="No se detecta llave cerca">
+                <br><br>
+                <button type="button" onclick="agregar()" class="button">Agregar</button>
+                <br><br><br>
+                <label id="estado"></laebl>
             </div>
 
             <div id="Paris" class="tabcontent">
@@ -54,6 +59,7 @@ const String MAIN_page = R"=(
     </div>
 
     <script>
+        setInterval(() => getUID(), 1000);
         function agregar() {
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
@@ -65,6 +71,21 @@ const String MAIN_page = R"=(
             xhttp.open("GET", "agregar", true);
             xhttp.send();
         }
+
+        function getUID() {
+            console.log("hola");
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    document.getElementById("uid").value = this.responseText;
+                    console.log(this.responseText);
+                }
+            };
+            xhttp.open("GET", "getuid", true);
+            xhttp.send();
+        }
+
+
 
         function cambiarTab(evt, cityName) {
             var i, tabcontent, tablinks;
@@ -141,6 +162,7 @@ const String MAIN_page = R"=(
         main {
             grid-area: content;
             background-color: #e1e2e1;
+            align-content: center;
         }
         
         footer {
@@ -151,10 +173,43 @@ const String MAIN_page = R"=(
         }
         
         .tabcontent {
+            background-color: #f5f5f6;
+            width: 80%;
+            height: 70%;
+            margin: auto;
+            margin-top: 5%;
+            padding: 2%;
+            text-align: center;
             -webkit-animation: fadeEffect 1s;
             animation: fadeEffect 1s;
         }
-        
+
+        .tabcontent input[type=text] {
+            width: 50%;
+            padding: 1% 3%;
+            margin: 1% 0;
+            box-sizing: border-box;
+            border: 2px solid #29434e;
+            border-radius: 4px;
+            font-size: 100%;
+            text-align: center;
+        }
+
+        .button {
+            background-color: #819ca9; 
+            color: black; 
+            border: 2px solid #29434e;
+            padding: 2% 5%;
+            text-align: center;
+             text-decoration: none;
+            display: inline-block;
+             font-size: 100%;
+             margin: 0.5% ;
+             transition-duration: 0.4s;
+             cursor: pointer;
+             user-select: none;
+        }
+
         .tab button {
             display: block;
             background-color: inherit;
@@ -168,16 +223,17 @@ const String MAIN_page = R"=(
             transition: 0.3s;
             font-size: 125%;
         }
+
         /* Change background color of buttons on hover */
         
         .tab button:hover {
-            background-color: #ddd;
+            background-color: #607d8b;
             color: black;
         }
         /* Create an active/current "tab button" class */
         
         .tab button.active {
-            background-color: #ccc;
+            background-color: #8eacbb;
             color: black;
         }
         
@@ -225,7 +281,26 @@ const String MAIN_page = R"=(
                 padding: 5%;
             }
         }
+
+        @media only screen and (max-width: 400px){
+            .tabcontent input[type=text] {
+                width: 80%;
+             }
+             .button:active {
+                 background-color: #29434e;
+                 color: white;
+                 box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+             }
+        }
         
+        @media only screen and (min-width: 401px){
+            .button:hover {
+             background-color: #29434e;
+             color: white;
+             box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+            }
+        }
+
         @-webkit-keyframes fadeEffect {
             from {
                 opacity: 0;
@@ -247,5 +322,4 @@ const String MAIN_page = R"=(
 </body>
 
 </html>
-
 )=";
