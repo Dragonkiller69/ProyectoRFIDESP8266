@@ -22,6 +22,7 @@ const char *password = "123456789";
 String indexhtml = MAIN_page; // String que contiene la pagina completa
 String estado;
 boolean agregando = false;
+boolean leyendo = true;
 
 ESP8266WebServer server(80); //Server on port 80
 
@@ -34,19 +35,35 @@ void handleRoot()
 }
 
 void handleGetUID(){
-  agregando = true;
-  rfid.getUIDSecure();
-  server.send(200, "text/plane", rfid.UID);
+  agregando = server.arg("agregando").toInt();
+  //Serial.println(agregando);
+  if(agregando){
+    //Serial.println("en hadleuid");
+    rfid.getUIDSecure();
+    server.send(200, "text/plane", rfid.UID);
+    }
 }
 
 void handleAgregar()
 {
   agregando = false;
-  Serial.println("Aqui en agregar");
+  //Serial.println("Aqui en agregar");
   if (rfid.addCard()){
     estado = "Llave agregada exitosamente";
   }else{
-    estado = "La llave ya existe";
+    estado = "La llave ya existe o es invalida";
+  }
+  server.send(200, "text/plane", estado); //Send web page
+}
+
+void handleEliminar()
+{
+  agregando = false;
+  //Serial.println("Aqui en eliminar");
+  if (rfid.borrarLlave()){
+    estado = "Llave eliminada exitosamente";
+  }else{
+    estado = "La llave no existe o es invalida";
   }
   server.send(200, "text/plane", estado); //Send web page
 }
@@ -75,6 +92,7 @@ void setup(void){
   */
   server.on("/", handleRoot); 
   server.on("/agregar", handleAgregar);
+  server.on("/eliminar", handleEliminar);
   server.on("/getuid", handleGetUID);
 
   server.begin(); //Start server
@@ -85,10 +103,12 @@ void setup(void){
 //==============================================================
 
 void loop(void){
-  server.handleClient(); //Maneja las peticiones de cliente
-
+  
   if(!agregando){
      rfid.operarCerradura();
     }
+  server.handleClient(); //Maneja las peticiones de cliente
+
+  
         
 }

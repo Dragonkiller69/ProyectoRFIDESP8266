@@ -17,10 +17,11 @@ const String MAIN_page = R"=(
         <nav>
             <div id="navbar" class="tab">
                 <p id="titulo">Administracion RFID NFC </p>
-                <button class="tablinks" onclick="cambiarTab(event, 'agregar')" id="defaultOpen">Agregar</button>
-                <button class="tablinks" onclick="cambiarTab(event, 'Paris')">Borrar</button>
+                <button class="tablinks" onclick="cambiarTab(event, 'Home'), stopAgregando()" id="defaultOpen">Home</button>
+                <button class="tablinks" onclick="cambiarTab(event, 'agregar'), agregando()">Agregar</button>
+                <button class="tablinks" onclick="cambiarTab(event, 'borrar'), agregando()">Borrar</button>
                 <button class="tablinks" onclick="cambiarTab(event, 'Tokyo')">Listar</button>
-                <div class="menu" ontouchend="myFunction()">
+                <div class="menu" ontouchend="mostrarMenu()">
                     <div></div>
                     <div></div>
                     <div></div>
@@ -29,6 +30,11 @@ const String MAIN_page = R"=(
         </nav>
 
         <main>
+            <div id="Home" class="tabcontent">
+                <h3>Home</h3>
+                <p>Aqui home chill papa</p>
+            </div>
+
             <div id="agregar" class="tabcontent">
                 <h2 style="margin-top: 0%">Agregar nueva llave</h2>
                 <label>Acerque la llave a la cerradura</label>
@@ -37,14 +43,22 @@ const String MAIN_page = R"=(
                 <br>
                 <input id="uid" type="text" readonly placeholder="No se detecta llave cerca">
                 <br><br>
-                <button type="button" onclick="agregar()" class="button">Agregar</button>
+                <button type="button" onclick="get('agregar')" class="button">Agregar</button>
                 <br><br><br>
-                <label id="estado"></laebl>
+                <label id="estado"></label>
             </div>
 
-            <div id="Paris" class="tabcontent">
-                <h3>Paris</h3>
-                <p>Paris is the capital of France.</p>
+            <div id="borrar" class="tabcontent">
+                <h2 style="margin-top: 0%">Borrar llave</h2>
+                <label>Acerque la llave a la cerradura</label>
+                <br><br>
+                <label>UID de llave: </label>
+                <br>
+                <input id="uidborrar" type="text" readonly placeholder="No se detecta llave cerca">
+                <br><br>
+                <button type="button" onclick="get('eliminar')" class="button">Eliminar</button>
+                <br><br><br>
+                <label id="estadoborrar"></label>
             </div>
 
             <div id="Tokyo" class="tabcontent">
@@ -59,33 +73,47 @@ const String MAIN_page = R"=(
     </div>
 
     <script>
-        setInterval(() => getUID(), 1000);
-        function agregar() {
+        var timer;
+
+        function agregando() {
+            if (timer == null) {
+                timer = setInterval(() => getUID(1), 1000);
+            }
+        }
+
+        function stopAgregando() {
+            clearInterval(timer);
+            timer = null;
+            getUID(0);
+        }
+
+        function get(path) {
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
-                    document.getElementById("estado").innerHTML =
-                        this.responseText;
+                    if (path == 'agregar') {
+                        document.getElementById("estado").innerHTML = this.responseText;
+                    } else {
+                        document.getElementById("estadoborrar").innerHTML = this.responseText;
+                    }
                 }
             };
-            xhttp.open("GET", "agregar", true);
+            xhttp.open("GET", path, true);
             xhttp.send();
         }
 
-        function getUID() {
+        function getUID(agregando) {
             console.log("hola");
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     document.getElementById("uid").value = this.responseText;
-                    console.log(this.responseText);
+                    document.getElementById("uidborrar").value = this.responseText;
                 }
             };
-            xhttp.open("GET", "getuid", true);
+            xhttp.open("GET", "getuid?agregando=" + agregando, true);
             xhttp.send();
         }
-
-
 
         function cambiarTab(evt, cityName) {
             var i, tabcontent, tablinks;
@@ -93,7 +121,6 @@ const String MAIN_page = R"=(
 
             for (const tab of tabcontent) {
                 tab.style.display = "none";
-
             }
 
             tablinks = document.getElementsByClassName("tablinks");
@@ -105,7 +132,7 @@ const String MAIN_page = R"=(
         }
         document.getElementById("defaultOpen").click();
 
-        function myFunction() {
+        function mostrarMenu() {
             var x = document.getElementById("navbar");
             if (x.className === "tab") {
                 x.className += " responsive";
@@ -183,7 +210,7 @@ const String MAIN_page = R"=(
             -webkit-animation: fadeEffect 1s;
             animation: fadeEffect 1s;
         }
-
+        
         .tabcontent input[type=text] {
             width: 50%;
             padding: 1% 3%;
@@ -194,22 +221,22 @@ const String MAIN_page = R"=(
             font-size: 100%;
             text-align: center;
         }
-
+        
         .button {
-            background-color: #819ca9; 
-            color: black; 
+            background-color: #819ca9;
+            color: black;
             border: 2px solid #29434e;
             padding: 2% 5%;
             text-align: center;
-             text-decoration: none;
+            text-decoration: none;
             display: inline-block;
-             font-size: 100%;
-             margin: 0.5% ;
-             transition-duration: 0.4s;
-             cursor: pointer;
-             user-select: none;
+            font-size: 100%;
+            margin: 0.5%;
+            transition-duration: 0.4s;
+            cursor: pointer;
+            user-select: none;
         }
-
+        
         .tab button {
             display: block;
             background-color: inherit;
@@ -223,7 +250,6 @@ const String MAIN_page = R"=(
             transition: 0.3s;
             font-size: 125%;
         }
-
         /* Change background color of buttons on hover */
         
         .tab button:hover {
@@ -281,26 +307,26 @@ const String MAIN_page = R"=(
                 padding: 5%;
             }
         }
-
-        @media only screen and (max-width: 400px){
+        
+        @media only screen and (max-width: 400px) {
             .tabcontent input[type=text] {
                 width: 80%;
-             }
-             .button:active {
-                 background-color: #29434e;
-                 color: white;
-                 box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
-             }
-        }
-        
-        @media only screen and (min-width: 401px){
-            .button:hover {
-             background-color: #29434e;
-             color: white;
-             box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+            }
+            .button:active {
+                background-color: #29434e;
+                color: white;
+                box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
             }
         }
-
+        
+        @media only screen and (min-width: 401px) {
+            .button:hover {
+                background-color: #29434e;
+                color: white;
+                box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
+            }
+        }
+        
         @-webkit-keyframes fadeEffect {
             from {
                 opacity: 0;
